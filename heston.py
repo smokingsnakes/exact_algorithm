@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import numpy as np
 import scipy
-
+import scipy.integrate as integrate
 
 k=2
 sigma=0.2
@@ -31,3 +31,25 @@ def phi_heston(a, v0, v_t, d):
                              (np.exp(delta/2))/(1 - np.exp(delta))), z = 0.5*d - 1)
     
     return part1 + part2 + part3
+
+
+def intv(n, cf):
+    
+    def integrand(x, u, phi):
+        
+        return np.imag(phi(u) * np.exp(-1j * u * x)) / u
+
+    ## integrate to CDF
+    
+    def F_x(x):
+        
+        return 0.5 - 1/np.pi * integrate.quad(integrand(x), 0, np.inf, args = (u))
+
+    def invcdf(u):
+        
+        def subcdf(t):
+            return F_x(t) - u
+        
+        return scipy.optimize.newton(F_x(t), x0 = 0.1)
+
+
