@@ -43,24 +43,27 @@ def phi_heston(a, v0, v_t, d):
 
 def intv(n, cf, v0, v_t, d):
     
-    def integrand(x, u, phi, v0, v_t, d):
-        
-        return np.imag(phi(u, v0, v_t, d) * np.exp(-1j * u * x)) / u
+    U = np.random.normal(0,1,n)
+    
+    def integrand(phi = phi_heston, v0 = v0, v_t = v_t, d = d, x = U):
+        def f2(x,u):
+            np.imag(phi(u, v0, v_t, d) * np.exp(-1j * u * x)) / u
+        return f2
 
     ## integrate to CDF
     
-    def F_x(x, u):
+    def F_x(x):
         
-        return 0.5 - 1/np.pi * integrate.quad(integrand(x, u, cf, v0, v_t, d), 0, np.inf, args = (u))
+        return 0.5 - 1/np.pi * integrate.quad(integrand, 0, np.inf,
+                                              args = (x))[0]
 
     def invcdf(u):
         
         def subcdf(t):
             return F_x(t) - u
         
-        return scipy.optimize.newton(F_x(t,u), x0 = 0.1)
+        return scipy.optimize.newton(subcdf, x0 = 0.1)
     
-    U = np.random.normal(0,1,n)
     
     return invcdf(U)
 
@@ -78,9 +81,8 @@ def heston(S, X, r, v, theta, rho, k, sigma, phi, t = 0, tau = 1):
     
     
     # Sampling int{V}
-
     int_v = intv(v0 = v, v_t = vt, d = d1, n = 1, cf = phi)
-
+    
     # Sampling int{v}dw
     int_vdw = (1/sigma) * (vt - v - k * theta * dt + k  * int_v)
     
@@ -106,7 +108,8 @@ def heston(S, X, r, v, theta, rho, k, sigma, phi, t = 0, tau = 1):
 
 
 
-heston(S=S, X=X, r=r, v = v, theta = theta, rho = rho, k = k, sigma = sigma,phi = phi_heston)
+heston(S=S, X=X, r=r, v = v, theta = theta, rho = rho,
+       k = k, sigma = sigma,phi = phi_heston)
 
 
 
