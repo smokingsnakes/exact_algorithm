@@ -46,8 +46,9 @@ def intv(n, cf, v0, v_t, d):
     U = np.random.normal(0,1,n)
     
     def integrand(phi = phi_heston, v0 = v0, v_t = v_t, d = d, x = U):
-        def f2(x,u):
-            np.imag(phi(u, v0, v_t, d) * np.exp(-1j * u * x)) / u
+        def f2(u,x):
+            func = np.imag(phi(u, v0, v_t, d) * np.exp(-1j * u * x)) / u
+            return func
         return f2
 
     ## integrate to CDF
