@@ -105,11 +105,13 @@ def heston(S, X, r, v, theta, rho, k, sigma, phi, t = 0, tau = 1):
 
 
 
+lista = []
 
-
-heston(S=S, X=X, r=r, v = v, theta = theta, rho = rho,
-       k = k, sigma = sigma,phi = phi_heston)
-
+for i in range(100):
+    print(i)
+    obj = heston(S=S, X=X, r=r, v = v, theta = theta, rho = rho,
+       k = k, sigma = sigma,phi = phi_heston)[0]
+    lista.append(obj)
 
 
 
