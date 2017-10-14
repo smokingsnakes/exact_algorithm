@@ -77,15 +77,13 @@ def heston(S, X, r, v, theta, rho, k, sigma, phi, t = 0, tau = 1):
     # sampling V
     lambda1 = (4*k*np.exp(-k*dt)*v)/(sigma**2 * (1-np.exp(-k*dt)))
     vt = c0 * np.random.noncentral_chisquare(size = 1, df = d1, nonc = lambda1)
-    
-    
+
     # Sampling int{V}
     int_v = intv(v0 = v, v_t = vt, d = d1, n = 1, cf = phi)
     
     # Sampling int{v}dw
     int_vdw = (1/sigma) * (vt - v - k * theta * dt + k  * int_v)
-    
-    
+
     # Sampling S
     if int_v >= 0:
         m = np.log(S) + (r * (tau - t) - (1/2) * int_v + rho * int_vdw)
@@ -104,7 +102,7 @@ def heston(S, X, r, v, theta, rho, k, sigma, phi, t = 0, tau = 1):
     return(call, Result, ST)
 
 
-
+N=100
 lista = []
 
 for i in range(100):
@@ -112,41 +110,4 @@ for i in range(100):
     obj = heston(S=S, X=X, r=r, v = v, theta = theta, rho = rho,
        k = k, sigma = sigma,phi = phi_heston)[0]
     lista.append(obj)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
