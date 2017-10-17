@@ -1,20 +1,17 @@
-# -*- coding: utf-8 -*-
 import numpy as np
 import scipy
 import scipy.integrate as integrate
 
-
-
-S=100
-X=100
-r=0.2
-v=0.9
+S = 100
+X = 100
+r = 0.2
+v = 0.9
 theta = 0.3
-rho= -0.2
-k=2
-sigma =0.9
-t=0
-tau=1
+rho = -0.2
+k = 2
+sigma = 0.9
+t = 0
+tau = 1
 
 
 def phi_heston(a, v0, v_t, d):
@@ -43,13 +40,13 @@ def phi_heston(a, v0, v_t, d):
 
 def intv(n, cf, v0, v_t, d):
     
-    U = np.random.normal(0,1,n)
+    U = np.random.normal(0, 1, n)
     
-    def integrand(x, u, phi = phi_heston):
+    def integrand(x, u, phi=phi_heston):
         func = np.imag(phi(u, v0, v_t, d) * np.exp(-1j * u * x)) / u
         return func
 
-    ## integrate to CDF
+    # integrate to CDF
     
     def F_x(x):
         
@@ -61,7 +58,7 @@ def intv(n, cf, v0, v_t, d):
         def subcdf(t):
             return F_x(t) - u
         
-        return scipy.optimize.newton(subcdf, x0 = 0.1)
+        return scipy.optimize.newton(subcdf, x0=0.1)
     
     
     return invcdf(U)
@@ -69,17 +66,17 @@ def intv(n, cf, v0, v_t, d):
 
 def heston(S, X, r, v, theta, rho, k, sigma, phi, t = 0, tau = 1):
     
-    d1 = (4 * k * theta)/(sigma)**2
+    d1 = (4 * k * theta)/sigma**2
     c0 = (sigma**2 * (1 - np.exp(-k*tau)))/(4*k)
     dt = (tau-t)
     ST = None
     
     # sampling V
     lambda1 = (4*k*np.exp(-k*dt)*v)/(sigma**2 * (1-np.exp(-k*dt)))
-    vt = c0 * np.random.noncentral_chisquare(size = 1, df = d1, nonc = lambda1)
+    vt = c0 * np.random.noncentral_chisquare(size=1, df=d1, nonc=lambda1)
 
     # Sampling int{V}
-    int_v = intv(v0 = v, v_t = vt, d = d1, n = 1, cf = phi)
+    int_v = intv(v0=v, v_t=vt, d=d1, n=1, cf=phi)
     
     # Sampling int{v}dw
     int_vdw = (1/sigma) * (vt - v - k * theta * dt + k  * int_v)
@@ -99,15 +96,16 @@ def heston(S, X, r, v, theta, rho, k, sigma, phi, t = 0, tau = 1):
     Result[Result <= 0] = 0
     call = np.exp(-r * tau) * Result
     
-    return(call, Result, ST)
+    return call, Result, ST
 
 
-N=100
+N=1000
 lista = []
 
-for i in range(100):
+for i in range(N):
     print(i)
-    obj = heston(S=S, X=X, r=r, v = v, theta = theta, rho = rho,
-       k = k, sigma = sigma,phi = phi_heston)[0]
+    obj = heston(S=S, X=X, r=r, v=v, theta=theta, rho=rho,
+       k=k, sigma=sigma, phi=phi_heston)[0]
     lista.append(obj)
 
+np.mean(lista)
