@@ -139,12 +139,11 @@ def heston(S, X, r, v, theta, rho, k, sigma, phi, t = 0, tau = 1):
     return call, Result, ST
 
 
-<<<<<<< HEAD
 
 N=250
 =======
 N=1000
->>>>>>> 5689449283dea289f7d9684c23bed9fb80d90602
+
 lista = []
 
 for i in range(N):
